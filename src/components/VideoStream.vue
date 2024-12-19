@@ -28,9 +28,10 @@ onBeforeUnmount(() => {})
 
 <style>
 #video-wrapper {
-  position: relative;
-  width: 50%;
-  height: 100%;
+  bottom: 100px;
+  position: absolute;
+  width: 100%;
+  height: 60%;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0px 2px 16px 2px rgba(84, 84, 84, 0.3);
@@ -42,5 +43,15 @@ video {
   height: 100%;
   object-fit: cover;
   transform: scaleX(-1);
+}
+
+/* For desktops (screens larger than 1299px) */
+@media (min-width: 1299px) {
+  #video-wrapper {
+    position: relative;
+    bottom: 0;
+    width: 50%;
+    height: 100%;
+  }
 }
 </style>
