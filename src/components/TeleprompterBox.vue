@@ -152,6 +152,7 @@ onBeforeUnmount(() => {
   max-width: 100vw;
   max-height: 100vh;
   background-color: var(--vt-c-indigo);
+  opacity: 0.7;
   color: white;
   font-size: 12px;
   position: absolute;
@@ -162,5 +163,6 @@ onBeforeUnmount(() => {
   border-radius: 10px;
   resize: both;
   overflow: auto;
+  padding: 8px 16px;
 }
 </style>
