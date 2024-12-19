@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref } from 'vue'
 defineProps<{
   script: string
 }>()
 const refEl = ref<HTMLElement | null>(null)
 let isDragging = false
 let startX: number, startY: number, startLeft: number, startTop: number
-const resizeHandleMargin = 10
 
 const isInBottomRightHandle = (e: MouseEvent | TouchEvent) => {
   if (!refEl.value) return false
   const rect = refEl.value.getBoundingClientRect()
+  const resizeHandleMargin = 10
   let isInHorizontalHandle: boolean = false
   let isInVerticalHandle: boolean = false
   if (e instanceof TouchEvent) {
@@ -29,15 +29,13 @@ const onMouseDown = (e: MouseEvent) => {
     return
   }
   if (refEl.value && e.target === refEl.value) {
-    e.preventDefault()
-    e.stopPropagation()
     isDragging = true
     startX = e.clientX
     startY = e.clientY
     startLeft = parseInt(window.getComputedStyle(refEl.value).left, 10)
     startTop = parseInt(window.getComputedStyle(refEl.value).top, 10)
 
-    document.addEventListener('mouseup', onMouseUp)
+    document.addEventListener('mouseup', onMouseOrTouchUp)
     document.addEventListener('mousemove', onMouseMove)
   }
 }
@@ -53,7 +51,7 @@ const onTouchDown = (e: TouchEvent) => {
     startLeft = parseInt(window.getComputedStyle(refEl.value).left, 10)
     startTop = parseInt(window.getComputedStyle(refEl.value).top, 10)
 
-    document.addEventListener('touchend', onMouseUp)
+    document.addEventListener('touchend', onMouseOrTouchUp)
     document.addEventListener('touchmove', onTouchMove)
   }
 }
@@ -112,35 +110,20 @@ const onTouchMove = (e: TouchEvent) => {
   }
 }
 
-const onMouseUp = () => {
+const onMouseOrTouchUp = () => {
   if (isDragging) {
     isDragging = false
 
     document.removeEventListener('mousemove', onMouseMove)
-    document.removeEventListener('mouseup', onMouseUp)
+    document.removeEventListener('mouseup', onMouseOrTouchUp)
     document.removeEventListener('touchmove', onTouchMove)
-    document.removeEventListener('touchend', onMouseUp)
+    document.removeEventListener('touchend', onMouseOrTouchUp)
   }
 }
-
-onMounted(() => {
-  if (refEl.value) {
-    refEl.value.addEventListener('mousedown', onMouseDown)
-    refEl.value.addEventListener('touchstart', onTouchDown)
-  }
-})
-
-onBeforeUnmount(() => {
-  if (refEl.value) {
-    refEl.value.removeEventListener('mousedown', onMouseDown)
-  }
-  document.removeEventListener('mousemove', onMouseMove)
-  document.removeEventListener('mouseup', onMouseUp)
-})
 </script>
 
 <template>
-  <div id="teleprompter" ref="refEl">
+  <div id="teleprompter" ref="refEl" @mousedown="onMouseDown" @touchstart="onTouchDown">
     <p id="script">{{ script }}</p>
   </div>
 </template>
