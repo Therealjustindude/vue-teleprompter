@@ -141,28 +141,29 @@ onBeforeUnmount(() => {
 
 <template>
   <div id="teleprompter" ref="refEl">
-    <h1 id="script">{{ script }}</h1>
+    <p id="script">{{ script }}</p>
   </div>
 </template>
 
 <style scoped>
 #teleprompter {
+  width: 50%;
+  height: 85%;
   min-width: 350px;
   min-height: 150px;
   max-width: 100vw;
   max-height: 100vh;
-  background-color: var(--vt-c-indigo);
-  opacity: 0.7;
+  right: 0;
+  background-color: rgba(84, 84, 84, 0.5);
   color: white;
-  font-size: 12px;
   position: absolute;
-  top: 50px;
-  left: 50px;
   cursor: move;
   border: 2px solid black;
   border-radius: 10px;
   resize: both;
   overflow: auto;
   padding: 8px 16px;
+  box-shadow: 0px 2px 16px 2px rgba(84, 84, 84, 0.3);
+  z-index: 1000;
 }
 </style>
