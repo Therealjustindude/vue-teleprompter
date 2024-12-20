@@ -27,13 +27,13 @@ const handleCameraToggle = () => {
 
 <template>
   <div id="control-wrapper" ref="refWrapper">
+    <RecordButton @click="handleRecordingClick" :isRecording="recordingStore.isRecording" />
     <VideoCameraIcon v-if="!recordingStore.isCameraOff" class="icon" @click="handleCameraToggle" />
     <VideoCameraSlashIcon
       v-if="recordingStore.isCameraOff"
       class="icon"
       @click="handleCameraToggle"
     />
-    <RecordButton @click="handleRecordingClick" :isRecording="recordingStore.isRecording" />
   </div>
 </template>
 
@@ -42,7 +42,7 @@ const handleCameraToggle = () => {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  min-width: 300px;
+  min-width: 150px;
   height: 50px;
   border: 1px solid black;
   border-radius: 10px;
