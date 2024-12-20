@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import ControllerComponent from './components/ControllerComponent.vue'
+import VideoController from './components/VideoController.vue'
 import TeleprompterComponent from './components/TeleprompterComponent.vue'
 import VideoStream from './components/VideoStream.vue'
-import { useRecordingStore } from './stores/recording'
+import { useVideoStreamStore } from '@/stores/video-stream'
 
-const recordingStore = useRecordingStore()
+const recordingStore = useVideoStreamStore()
 </script>
 
 <template>
@@ -20,7 +20,7 @@ const recordingStore = useRecordingStore()
     </div>
   </main>
   <footer>
-    <ControllerComponent />
+    <VideoController />
   </footer>
 </template>
 

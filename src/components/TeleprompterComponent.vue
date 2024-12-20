@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import TeleprompterController from './TeleprompterController.vue'
 defineProps<{
   script: string
 }>()
@@ -125,6 +126,7 @@ const onMouseOrTouchUp = () => {
 <template>
   <div id="teleprompter" ref="refEl" @mousedown="onMouseDown" @touchstart="onTouchDown">
     <p id="script">{{ script }}</p>
+    <TeleprompterController />
   </div>
 </template>
 
@@ -138,7 +140,6 @@ const onMouseOrTouchUp = () => {
   max-height: 100vh;
   right: 0;
   background-color: rgba(84, 84, 84, 0.5);
-  color: white;
   position: absolute;
   cursor: move;
   border: 2px solid black;
@@ -148,5 +149,11 @@ const onMouseOrTouchUp = () => {
   padding: 8px 16px;
   box-shadow: 0px 2px 16px 2px rgba(84, 84, 84, 0.3);
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#teleprompter p {
+  color: white;
 }
 </style>

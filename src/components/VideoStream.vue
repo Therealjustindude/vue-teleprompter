@@ -1,28 +1,53 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-const refEl = ref<HTMLVideoElement | null>(null)
+import { ref, onMounted } from 'vue'
+import { useVideoStreamStore } from '@/stores/video-stream'
 
-onMounted(async () => {
+const recordingStore = useVideoStreamStore()
+const videoRef = ref<HTMLVideoElement | null>(null)
+
+const initializeMediaRecorder = async () => {
   try {
-    // Request access to the user's webcam
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true })
+    // Request access to the user's webcam and microphone
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
 
-    // Assign the stream to the <video> element
-    if (refEl.value) {
-      refEl.value.srcObject = stream
-      refEl.value.play() // Start playback
+    recordingStore.setVideoStream(stream)
+
+    assignStreamToVideoRef(stream)
+
+    // Initialize MediaRecorder only if the stream is successfully set
+    if (recordingStore.videoStream) {
+      recordingStore.setMediaRecorder(new MediaRecorder(recordingStore.videoStream))
+    } else {
+      console.error('Stream reference not found in the state store')
     }
   } catch (err) {
-    console.error('Error accessing webcam:', err)
+    console.error('Error accessing media devices:', err)
   }
-})
+}
 
-onBeforeUnmount(() => {})
+const assignStreamToVideoRef = (stream: MediaStream) => {
+  if (videoRef.value) {
+    try {
+      videoRef.value.srcObject = stream
+      videoRef.value.play()
+      recordingStore.setVideoElementRefContext(videoRef.value)
+      recordingStore.isCameraOff = false
+    } catch (err) {
+      console.error('Error assigning stream to video element:', err)
+    }
+  } else {
+    console.error('HTMLVideoElement reference not set')
+  }
+}
+
+onMounted(() => {
+  initializeMediaRecorder()
+})
 </script>
 
 <template>
   <div id="video-wrapper">
-    <video id="video-stream" ref="refEl" autoplay loop muted />
+    <video id="video-stream" ref="videoRef" autoplay loop muted />
   </div>
 </template>
 
