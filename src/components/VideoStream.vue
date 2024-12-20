@@ -44,14 +44,4 @@ video {
   object-fit: cover;
   transform: scaleX(-1);
 }
-
-/* For desktops (screens larger than 1299px) */
-@media (min-width: 1299px) {
-  #video-wrapper {
-    position: relative;
-    bottom: 0;
-    width: 50%;
-    height: 100%;
-  }
-}
 </style>
