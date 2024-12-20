@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import { VideoCameraIcon } from '@heroicons/vue/24/solid'
 import { VideoCameraSlashIcon } from '@heroicons/vue/24/solid'
-import { ArrowPathIcon as ResetIcon } from '@heroicons/vue/24/solid'
 import RecordButton from './RecordButton.vue'
 import { useVideoStreamStore } from '@/stores/video-stream'
 import { useTeleprompterStore } from '@/stores/teleprompter'
@@ -21,10 +20,6 @@ const handleRecordingClick = () => {
   }
 }
 
-const handleStartOver = () => {
-  console.log('Start over')
-}
-
 const handleCameraToggle = () => {
   recordingStore.toggleCamera()
 }
@@ -32,7 +27,6 @@ const handleCameraToggle = () => {
 
 <template>
   <div id="control-wrapper" ref="refWrapper">
-    <ResetIcon class="icon" @click="handleStartOver" />
     <VideoCameraIcon v-if="!recordingStore.isCameraOff" class="icon" @click="handleCameraToggle" />
     <VideoCameraSlashIcon
       v-if="recordingStore.isCameraOff"
