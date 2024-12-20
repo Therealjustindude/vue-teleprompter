@@ -3,12 +3,9 @@ import { ref } from 'vue'
 import { PlayIcon } from '@heroicons/vue/24/solid'
 import { PauseIcon } from '@heroicons/vue/24/solid'
 import { ArrowPathIcon as ResetIcon } from '@heroicons/vue/24/solid'
-import RecordButton from './RecordButton.vue'
 import SettingsButton from './SettingsButton.vue'
-import { useRecordingStore } from '@/stores/recording'
 import { useTeleprompterStore } from '@/stores/teleprompter'
 
-const recordingStore = useRecordingStore()
 const teleprompterStore = useTeleprompterStore()
 const refWrapper = ref<HTMLElement | null>(null)
 
@@ -16,16 +13,6 @@ const toggleTeleprompter = () => {
   if (teleprompterStore.isPlaying) {
     teleprompterStore.stopPlaying()
   } else {
-    teleprompterStore.startPlaying()
-  }
-}
-
-const handleRecordingClick = () => {
-  if (recordingStore.isRecording) {
-    recordingStore.stopRecording()
-    teleprompterStore.stopPlaying()
-  } else {
-    recordingStore.startRecording()
     teleprompterStore.startPlaying()
   }
 }
@@ -41,7 +28,6 @@ const handleStartOver = () => {
     <ResetIcon class="icon" @click="handleStartOver" />
     <PlayIcon v-if="!teleprompterStore.isPlaying" class="icon" @click="toggleTeleprompter" />
     <PauseIcon v-if="teleprompterStore.isPlaying" class="icon" @click="toggleTeleprompter" />
-    <RecordButton @click="handleRecordingClick" :isRecording="recordingStore.isRecording" />
   </div>
 </template>
 
@@ -50,11 +36,14 @@ const handleStartOver = () => {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  min-width: 300px;
+  min-width: 20%;
+  max-width: 80%;
   height: 50px;
   border: 1px solid black;
   border-radius: 10px;
   box-shadow: 0px 1px 4px 0px rgba(84, 84, 84, 0.3);
+  bottom: 12px;
+  position: absolute;
 }
 .icon {
   width: 32px;
