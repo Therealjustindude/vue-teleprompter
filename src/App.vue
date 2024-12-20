@@ -1,22 +1,26 @@
 <script setup lang="ts">
-import TeleprompterBox from './components/TeleprompterBox.vue'
+import ControllerComponent from './components/ControllerComponent.vue'
+import TeleprompterComponent from './components/TeleprompterComponent.vue'
 import VideoStream from './components/VideoStream.vue'
+import { useRecordingStore } from './stores/recording'
+
+const recordingStore = useRecordingStore()
 </script>
 
 <template>
   <header>
-    <h1>Vue Teleprompter</h1>
-    <div id="recording-status">Recording...</div>
+    <h1>Teleprompter</h1>
+    <div v-if="recordingStore.isRecording" id="recording-status">Recording...</div>
   </header>
 
   <main>
     <div id="main-wrapper">
-      <TeleprompterBox script="You did it!" />
+      <TeleprompterComponent script="You did it!" />
       <VideoStream />
     </div>
   </main>
   <footer>
-    <div id="control-wrapper"></div>
+    <ControllerComponent />
   </footer>
 </template>
 
@@ -30,6 +34,10 @@ header {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0px 1px 4px 0px rgba(84, 84, 84, 0.3);
+}
+header h1 {
+  font-weight: 600;
+  color: var(--vt-c-indigo);
 }
 main {
   display: flex;
@@ -55,12 +63,5 @@ footer {
   align-items: center;
   width: 100%;
   margin-bottom: 32px;
-}
-#control-wrapper {
-  min-width: 300px;
-  height: 50px;
-  border: 1px solid black;
-  border-radius: 10px;
-  box-shadow: 0px 1px 4px 0px rgba(84, 84, 84, 0.3);
 }
 </style>
