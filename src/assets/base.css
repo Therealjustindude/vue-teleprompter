@@ -32,7 +32,7 @@
 
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
-
+  --record-red: rgba(255, 0, 0, 0.707);
   --section-gap: 160px;
 }
 
