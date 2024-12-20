@@ -131,7 +131,7 @@ const onMouseOrTouchUp = () => {
 <style scoped>
 #teleprompter {
   width: 100%;
-  height: 20%;
+  height: 25%;
   min-width: 350px;
   min-height: 150px;
   max-width: 100vw;
@@ -148,12 +148,5 @@ const onMouseOrTouchUp = () => {
   padding: 8px 16px;
   box-shadow: 0px 2px 16px 2px rgba(84, 84, 84, 0.3);
   z-index: 1000;
-}
-/* For desktops (screens larger than 1299px) */
-@media (min-width: 1299px) {
-  #teleprompter {
-    width: 50%;
-    height: 85%;
-  }
 }
 </style>
