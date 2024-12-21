@@ -59,7 +59,7 @@ const handleReset = () => {
               type="range"
               id="text-speed"
               v-model="teleprompterSpeedSlider"
-              min="0"
+              min="0.1"
               max="10"
               step="0.1"
             />
