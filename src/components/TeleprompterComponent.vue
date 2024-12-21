@@ -39,7 +39,11 @@ const onMouseDown = (e: MouseEvent) => {
   if (isInBottomRightHandle(e)) {
     return
   }
-  if (teleprompterContainerRef.value && e.target === teleprompterContainerRef.value) {
+  if (
+    teleprompterContainerRef.value &&
+    (e.target === teleprompterContainerRef.value ||
+      teleprompterContainerRef.value.contains(e.target as Node))
+  ) {
     isDragging = true
     startX = e.clientX
     startY = e.clientY
@@ -55,7 +59,11 @@ const onTouchDown = (e: TouchEvent) => {
   if (isInBottomRightHandle(e)) {
     return
   }
-  if (teleprompterContainerRef.value && e.target === teleprompterContainerRef.value) {
+  if (
+    teleprompterContainerRef.value &&
+    (e.target === teleprompterContainerRef.value ||
+      teleprompterContainerRef.value.contains(e.target as Node))
+  ) {
     isDragging = true
     startX = e.touches[0].clientX
     startY = e.touches[0].clientY
@@ -196,7 +204,6 @@ const resetScroll = () => {
   border-radius: 10px;
   resize: both;
   overflow: auto;
-  padding: 24px 32px;
   box-shadow: 0px 2px 16px 2px rgba(84, 84, 84, 0.3);
   z-index: 1000;
   display: flex;
@@ -204,11 +211,13 @@ const resetScroll = () => {
   align-items: center;
   justify-content: space-between;
 }
+
 #script-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   pointer-events: none;
+  padding: 24px 32px;
 }
 #teleprompter p {
   color: white;
