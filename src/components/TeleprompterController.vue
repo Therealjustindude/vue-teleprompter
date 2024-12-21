@@ -26,10 +26,15 @@ const handleReset = () => {
 
 <template>
   <div id="control-wrapper" ref="refWrapper">
-    <SettingsButton />
-    <ResetIcon class="icon" @click="handleReset" />
-    <PlayIcon v-if="!teleprompterStore.isPlaying" class="icon" @click="toggleTeleprompter" />
-    <PauseIcon v-if="teleprompterStore.isPlaying" class="icon" @click="toggleTeleprompter" />
+    <div id="est-wrapper">
+      <p>Est time: 0:00</p>
+    </div>
+    <div id="buttons-wrapper">
+      <SettingsButton />
+      <ResetIcon class="icon" @click="handleReset" />
+      <PlayIcon v-if="!teleprompterStore.isPlaying" class="icon" @click="toggleTeleprompter" />
+      <PauseIcon v-if="teleprompterStore.isPlaying" class="icon" @click="toggleTeleprompter" />
+    </div>
   </div>
 </template>
 
@@ -37,13 +42,22 @@ const handleReset = () => {
 #control-wrapper {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
   min-width: 100%;
   min-height: 48px;
   box-shadow: 0px -3px 4px 0px rgba(84, 84, 84, 0.3);
   background-color: var(--vt-c-white-mute);
   bottom: 0;
   position: sticky;
+  padding: 0px 16px;
+}
+#buttons-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 80%;
+}
+#est-wrapper {
+  width: 20%;
 }
 .icon {
   width: 32px;
