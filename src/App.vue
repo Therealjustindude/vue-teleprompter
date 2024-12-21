@@ -3,19 +3,18 @@ import VideoController from './components/VideoController.vue'
 import TeleprompterComponent from './components/TeleprompterComponent.vue'
 import VideoStream from './components/VideoStream.vue'
 import { useVideoStreamStore } from '@/stores/video-stream'
-
-const recordingStore = useVideoStreamStore()
+import { script } from '@/utils/script'
+const videoStreamStore = useVideoStreamStore()
 </script>
 
 <template>
   <header>
     <h1>Teleprompter</h1>
-    <div v-if="recordingStore.isRecording" id="recording-status">Recording...</div>
+    <div v-if="videoStreamStore.isRecording" id="recording-status">Recording...</div>
   </header>
-
   <main>
     <div id="main-wrapper">
-      <TeleprompterComponent script="You did it!" />
+      <TeleprompterComponent :script="script" />
       <VideoStream />
     </div>
   </main>

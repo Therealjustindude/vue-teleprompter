@@ -26,7 +26,7 @@ export const useVideoStreamStore = defineStore('video-stream', () => {
 
       // Handle stop event to finalize the recording
       mediaRecorder.value.onstop = () => {
-        const blob = new Blob(recordedChunks.value, { type: 'video/webm' })
+        const blob = new Blob(recordedChunks.value, { type: 'video/mp4' })
         recordedVideoURL.value = URL.createObjectURL(blob)
         recordedChunks.value = []
       }
@@ -100,5 +100,6 @@ export const useVideoStreamStore = defineStore('video-stream', () => {
     toggleCamera,
     isCameraOff,
     setVideoElementRefContext,
+    recordedVideoURL,
   }
 })
