@@ -192,7 +192,7 @@ const resetScroll = () => {
 #teleprompter {
   width: 100%;
   height: 25%;
-  min-width: 350px;
+  min-width: 380px;
   min-height: 150px;
   max-width: 100vw;
   max-height: 100vh;
