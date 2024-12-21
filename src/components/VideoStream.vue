@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useVideoStreamStore } from '@/stores/video-stream'
 
-const recordingStore = useVideoStreamStore()
+const videoStreamStore = useVideoStreamStore()
 const videoRef = ref<HTMLVideoElement | null>(null)
 
 const initializeMediaRecorder = async () => {
@@ -10,13 +10,13 @@ const initializeMediaRecorder = async () => {
     // Request access to the user's webcam and microphone
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
 
-    recordingStore.setVideoStream(stream)
+    videoStreamStore.setVideoStream(stream)
 
     assignStreamToVideoRef(stream)
 
     // Initialize MediaRecorder only if the stream is successfully set
-    if (recordingStore.videoStream) {
-      recordingStore.setMediaRecorder(new MediaRecorder(recordingStore.videoStream))
+    if (videoStreamStore.videoStream) {
+      videoStreamStore.setMediaRecorder(new MediaRecorder(videoStreamStore.videoStream))
     } else {
       console.error('Stream reference not found in the state store')
     }
@@ -30,8 +30,8 @@ const assignStreamToVideoRef = (stream: MediaStream) => {
     try {
       videoRef.value.srcObject = stream
       videoRef.value.play()
-      recordingStore.setVideoElementRefContext(videoRef.value)
-      recordingStore.isCameraOff = false
+      videoStreamStore.setVideoElementRefContext(videoRef.value)
+      videoStreamStore.isCameraOff = false
     } catch (err) {
       console.error('Error assigning stream to video element:', err)
     }
@@ -63,7 +63,7 @@ onMounted(() => {
   border: 2px solid black;
 }
 
-video {
+#video-stream {
   width: 100%;
   height: 100%;
   object-fit: cover;
