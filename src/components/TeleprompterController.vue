@@ -8,6 +8,7 @@ import { useTeleprompterStore } from '@/stores/teleprompter'
 
 const teleprompterStore = useTeleprompterStore()
 const refWrapper = ref<HTMLElement | null>(null)
+const emit = defineEmits(['reset'])
 
 const toggleTeleprompter = () => {
   if (teleprompterStore.isPlaying) {
@@ -17,15 +18,16 @@ const toggleTeleprompter = () => {
   }
 }
 
-const handleStartOver = () => {
-  console.log('Start over')
+const handleReset = () => {
+  emit('reset')
+  teleprompterStore.stopPlaying()
 }
 </script>
 
 <template>
   <div id="control-wrapper" ref="refWrapper">
     <SettingsButton />
-    <ResetIcon class="icon" @click="handleStartOver" />
+    <ResetIcon class="icon" @click="handleReset" />
     <PlayIcon v-if="!teleprompterStore.isPlaying" class="icon" @click="toggleTeleprompter" />
     <PauseIcon v-if="teleprompterStore.isPlaying" class="icon" @click="toggleTeleprompter" />
   </div>
@@ -43,7 +45,7 @@ const handleStartOver = () => {
   border-radius: 10px;
   box-shadow: 0px 1px 4px 0px rgba(84, 84, 84, 0.3);
   bottom: 12px;
-  position: absolute;
+  position: sticky;
 }
 .icon {
   width: 32px;
@@ -57,7 +59,7 @@ const handleStartOver = () => {
   cursor: pointer;
 }
 .icon:active {
-  transform: scale(0.9); /* Slightly shrink the icon */
-  color: var(--vt-c-divider-dark-1); /* Optional color change on click */
+  transform: scale(0.9);
+  color: var(--vt-c-divider-dark-1);
 }
 </style>
