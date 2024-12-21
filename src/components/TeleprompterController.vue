@@ -38,13 +38,11 @@ const handleReset = () => {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  min-width: 20%;
-  max-width: 80%;
-  height: 50px;
-  border: 1px solid black;
-  border-radius: 10px;
-  box-shadow: 0px 1px 4px 0px rgba(84, 84, 84, 0.3);
-  bottom: 12px;
+  min-width: 100%;
+  min-height: 48px;
+  box-shadow: 0px -3px 4px 0px rgba(84, 84, 84, 0.3);
+  background-color: var(--vt-c-white-mute);
+  bottom: 0;
   position: sticky;
 }
 .icon {
