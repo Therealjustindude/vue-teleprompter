@@ -39,5 +39,5 @@ export const useTeleprompterStore = defineStore('teleprompter', () => {
   }
 })
 
-const DEFAULT_SPEED = '20'
-const FONT_SIZE = '16'
+const DEFAULT_SPEED = '1'
+const FONT_SIZE = '32'
