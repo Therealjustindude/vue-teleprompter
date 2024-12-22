@@ -27,7 +27,7 @@ const handleReset = () => {
 <template>
   <div id="control-wrapper" ref="refWrapper">
     <div id="est-wrapper">
-      <p>Est time: 0:00</p>
+      <p>Est time: {{ teleprompterStore.estimatedReadingTime }}</p>
     </div>
     <div id="buttons-wrapper">
       <SettingsButton />

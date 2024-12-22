@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import TeleprompterController from './TeleprompterController.vue'
 import { useTeleprompterStore } from '@/stores/teleprompter'
 
-defineProps<{
+const props = defineProps<{
   script: string
 }>()
 const teleprompterStore = useTeleprompterStore()
@@ -172,6 +172,10 @@ const resetScroll = () => {
     textContainerRef.value.style.transform = 'translateY(0px)'
   }
 }
+
+onMounted(() => {
+  teleprompterStore.updateScript(props.script)
+})
 </script>
 
 <template>
