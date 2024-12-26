@@ -36,6 +36,10 @@ export const useVideoStreamStore = defineStore('video-stream', () => {
       return
     }
 
+    // Start recording
+    mediaRecorder.value.start()
+    isRecording.value = true
+
     try {
       // Handle data chunks
       mediaRecorder.value.ondataavailable = (event) => {
@@ -46,18 +50,14 @@ export const useVideoStreamStore = defineStore('video-stream', () => {
 
       // Save recording on stop
       mediaRecorder.value.onstop = () => {
-        const blob = new Blob(recordedChunks.value, { type: 'video/mp4' })
+        const blob = new Blob(recordedChunks.value, { type: 'video/webm' })
         recordedVideoURL.value = URL.createObjectURL(blob)
         recordedChunks.value = []
-        // const a = document.createElement('a')
-        // a.href = url
-        // a.download = 'recording.webm'
-        // a.click()
+        const a = document.createElement('a')
+        a.href = recordedVideoURL.value
+        a.download = 'recording.webm'
+        a.click()
       }
-
-      // Start recording
-      mediaRecorder.value.start()
-      isRecording.value = true
     } catch (error) {
       console.error('Error accessing media devices:', error)
     }

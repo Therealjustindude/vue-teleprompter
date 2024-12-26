@@ -14,7 +14,7 @@ const initializeVideoStream = async () => {
     // Start video stream
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     videoStreamStore.setVideoStream(stream)
-    videoRef.value!.srcObject = stream
+    videoRef.value!.srcObject = videoStreamStore.videoStream
 
     videoRef.value!.onloadedmetadata = async () => {
       // Match Canvas Resolution to Video Resolution
