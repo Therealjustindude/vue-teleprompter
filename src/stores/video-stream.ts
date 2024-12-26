@@ -134,6 +134,7 @@ export const useVideoStreamStore = defineStore('video-stream', () => {
         videoElementRef.value?.play()
         startCanvasDrawing()
         isCameraOff.value = false
+        changeTransformScaleX('scaleX(-1)')
       } catch (error) {
         console.error('Error reinitializing camera:', error)
       }
@@ -142,6 +143,7 @@ export const useVideoStreamStore = defineStore('video-stream', () => {
       videoStream.value = null
       isCameraOff.value = true
       stopCanvasDrawing()
+      changeTransformScaleX('scaleX(1)')
       clearCanvas()
     } else {
       console.error('No active video stream to toggle.')
@@ -169,6 +171,12 @@ export const useVideoStreamStore = defineStore('video-stream', () => {
     img.src = imageSrc
   }
 
+  function changeTransformScaleX(scaleX: string) {
+    if (canvasElementRef.value) {
+      canvasElementRef.value.style.transform = scaleX
+    }
+  }
+
   function cleanup() {
     stopCanvasDrawing()
     mediaRecorder.value?.stop()
@@ -190,6 +198,7 @@ export const useVideoStreamStore = defineStore('video-stream', () => {
     isCameraOff,
     setVideoElementRefContext,
     recordedVideoURL,
+    canvasElementRef,
     setCanvasElementRefContext,
     startCanvasDrawing,
     stopCanvasDrawing,
