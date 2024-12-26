@@ -1,53 +1,55 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useVideoStreamStore } from '@/stores/video-stream'
 
 const videoStreamStore = useVideoStreamStore()
 const videoRef = ref<HTMLVideoElement | null>(null)
+const canvasRef = ref<HTMLCanvasElement | null>(null)
 
-const initializeMediaRecorder = async () => {
+const initializeVideoStream = async () => {
   try {
-    // Request access to the user's webcam and microphone
+    if (videoRef.value) videoStreamStore.setVideoElementRefContext(videoRef.value)
+    if (canvasRef.value) videoStreamStore.setCanvasElementRefContext(canvasRef.value)
+
+    // Start video stream
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-
     videoStreamStore.setVideoStream(stream)
+    videoRef.value!.srcObject = stream
 
-    assignStreamToVideoRef(stream)
+    videoRef.value!.onloadedmetadata = async () => {
+      // Match Canvas Resolution to Video Resolution
+      if (canvasRef.value && videoRef.value) {
+        canvasRef.value.width = videoRef.value.videoWidth
+        canvasRef.value.height = videoRef.value.videoHeight
+      }
 
-    // Initialize MediaRecorder only if the stream is successfully set
-    if (videoStreamStore.videoStream) {
-      videoStreamStore.setMediaRecorder(new MediaRecorder(videoStreamStore.videoStream))
-    } else {
-      console.error('Stream reference not found in the state store')
+      videoRef.value?.play()
+      videoStreamStore.startCanvasDrawing()
     }
-  } catch (err) {
-    console.error('Error accessing media devices:', err)
-  }
-}
 
-const assignStreamToVideoRef = (stream: MediaStream) => {
-  if (videoRef.value) {
-    try {
-      videoRef.value.srcObject = stream
-      videoRef.value.play()
-      videoStreamStore.setVideoElementRefContext(videoRef.value)
-      videoStreamStore.isCameraOff = false
-    } catch (err) {
-      console.error('Error assigning stream to video element:', err)
+    // Initialize MediaRecorder
+    if (canvasRef.value) {
+      const canvasStream = canvasRef.value.captureStream()
+      videoStreamStore.setMediaRecorder(new MediaRecorder(canvasStream))
     }
-  } else {
-    console.error('HTMLVideoElement reference not set')
+  } catch (error) {
+    console.error('Error initializing video stream:', error)
   }
 }
 
 onMounted(() => {
-  initializeMediaRecorder()
+  initializeVideoStream()
+})
+
+onUnmounted(() => {
+  videoStreamStore.cleanup()
 })
 </script>
 
 <template>
   <div id="video-wrapper">
     <video id="video-stream" ref="videoRef" autoplay loop muted />
+    <canvas id="canvas-element" ref="canvasRef"></canvas>
   </div>
 </template>
 
@@ -64,6 +66,9 @@ onMounted(() => {
 }
 
 #video-stream {
+  display: none;
+}
+#canvas-element {
   width: 100%;
   height: 100%;
   object-fit: cover;
