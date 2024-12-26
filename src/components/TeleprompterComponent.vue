@@ -19,9 +19,8 @@ let startX: number, startY: number, startLeft: number, startTop: number
 const teleprompterContainerRef = ref<HTMLElement | null>(null)
 const textContainerRef = ref<HTMLElement | null>(null)
 const currentWordIndex = ref(0)
-
-const initialText = computed(() => teleprompterStore.parsedScript.lines.join('\n'))
-const words = computed(() => teleprompterStore.parsedScript.words)
+let accumulatedScroll = 0
+let lastTriggeredLineIndex = -1
 
 const scrollStep = computed(() => {
   return Number(teleprompterStore.teleprompterSpeedSlider)
@@ -33,12 +32,15 @@ async function startTeleprompterScroll() {
   function scrollStepFrame() {
     if (!teleprompterStore.isPlaying || !textContainerRef.value) return
 
-    textContainerRef.value.scrollTop += scrollStep.value
+    accumulatedScroll += scrollStep.value
 
-    if (currentWordIndex.value < words.value.length) {
-      handleTokenEvent(currentWordIndex.value)
-      currentWordIndex.value++
+    if (accumulatedScroll >= 1) {
+      textContainerRef.value.scrollTop += Math.floor(accumulatedScroll)
+      accumulatedScroll -= Math.floor(accumulatedScroll)
     }
+
+    // Check if the current word is visible
+    updateCurrentLineIndex()
 
     if (
       Math.ceil(textContainerRef.value.scrollTop + textContainerRef.value.clientHeight) >=
@@ -53,18 +55,42 @@ async function startTeleprompterScroll() {
   requestAnimationFrame(scrollStepFrame)
 }
 
-function handleTokenEvent(index: number) {
-  const event = teleprompterStore.parsedScript.events.find((e) => e.index === index)
-  if (event) {
-    if (event.type === 'image') {
-      videoStreamStore.toggleCamera()
-      videoStreamStore.showImageOnCanvas(event.url || 'sample-img.jpg')
-      emit('switch-to-image')
-    } else if (event.type === 'camera') {
-      videoStreamStore.toggleCamera()
-      emit('switch-to-camera')
+function updateCurrentLineIndex() {
+  if (!textContainerRef.value) {
+    console.warn('textContainerRef is not available.')
+    return
+  }
+
+  const containerRect = textContainerRef.value.getBoundingClientRect()
+  const paragraphs = textContainerRef.value.querySelectorAll('p')
+
+  for (const paragraph of paragraphs) {
+    const rect = paragraph.getBoundingClientRect()
+
+    if (rect.top >= containerRect.top && rect.top <= containerRect.top + 100) {
+      const lineIndex = Number(paragraph.dataset.index)
+
+      handleLineTokenEvent(lineIndex)
+      return
     }
   }
+}
+
+function handleLineTokenEvent(lineIndex: number) {
+  if (lastTriggeredLineIndex === lineIndex) return
+
+  const token = teleprompterStore.parsedScript.events.find((e) => e.index === lineIndex)
+
+  if (token?.type === 'image') {
+    videoStreamStore.toggleCamera()
+    videoStreamStore.showImageOnCanvas(token.url || 'sample-img.jpg')
+    emit('switch-to-image')
+  } else if (token?.type === 'camera') {
+    videoStreamStore.toggleCamera()
+    emit('switch-to-camera')
+  }
+
+  lastTriggeredLineIndex = lineIndex
 }
 
 function stopTeleprompterScroll() {
@@ -230,8 +256,13 @@ onMounted(() => {
     @touchstart="onTouchDown"
   >
     <div id="script-container" ref="textContainerRef">
-      <p id="script" :style="textStyle">
-        {{ initialText }}
+      <p
+        v-for="(line, index) in teleprompterStore.parsedScript.lines"
+        :key="index"
+        :data-index="index"
+        :style="textStyle"
+      >
+        {{ line }}
       </p>
     </div>
     <TeleprompterController @reset="resetScroll" />

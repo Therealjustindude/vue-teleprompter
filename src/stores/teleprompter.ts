@@ -53,7 +53,7 @@ export const useTeleprompterStore = defineStore('teleprompter', () => {
     const regex = /\{(?<tag>\w+)(?::(?<attributes>[^}]*))?\}(?:(?<content>.*?)\{\/\k<tag>\})?/gs
 
     let match
-    let wordIndex = 0
+    let currentLineIndex = 0
     while ((match = regex.exec(script.value)) !== null) {
       const [fullMatch, type, attributes, content] = match
       const idMatch = fullMatch.match(/id=([^}]+)/)
@@ -65,18 +65,18 @@ export const useTeleprompterStore = defineStore('teleprompter', () => {
 
         textContent.push(...words)
         lines.push(cleanLine) // Add the full line to lines array
-        wordIndex += words.length
+        currentLineIndex++
       } else if (type === 'image') {
         events.push({
           type: 'image',
-          index: wordIndex,
+          index: currentLineIndex, // Use line index, not word index
           id: idMatch?.[1],
           url: urlMatch?.[1],
         })
       } else if (type === 'camera') {
         events.push({
           type: 'camera',
-          index: wordIndex,
+          index: currentLineIndex, // Use line index
           id: idMatch?.[1],
         })
       }
@@ -105,5 +105,5 @@ export const useTeleprompterStore = defineStore('teleprompter', () => {
   }
 })
 
-const DEFAULT_SPEED = '1'
+const DEFAULT_SPEED = '2'
 const FONT_SIZE = '32'
