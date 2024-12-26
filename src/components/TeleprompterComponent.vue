@@ -289,25 +289,26 @@ onMounted(() => {
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
 }
 
 #script-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   pointer-events: none;
   padding: 104px 32px 0px 32px;
   scroll-behavior: auto;
   overflow-y: scroll;
+  gap: 6rem;
 }
 
 #teleprompter p {
   color: white;
   font-size: 24px;
-  line-height: 8rem;
   white-space: pre-wrap;
+  line-height: 6rem;
   pointer-events: none;
   transition: font-size 0.2s ease-in-out;
 }
