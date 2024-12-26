@@ -45,6 +45,51 @@ export const useTeleprompterStore = defineStore('teleprompter', () => {
     script.value = newScript
   }
 
+  const parsedScript = computed(() => {
+    const textContent: string[] = []
+    const lines: string[] = []
+    const events: { type: string; index: number; id?: string; url?: string }[] = []
+    // const regex = /{(edit|image|camera):[^}]*}(.*?){\/edit}?/gs
+    const regex = /\{(?<tag>\w+)(?::(?<attributes>[^}]*))?\}(?:(?<content>.*?)\{\/\k<tag>\})?/gs
+
+    let match
+    let wordIndex = 0
+    while ((match = regex.exec(script.value)) !== null) {
+      const [fullMatch, type, attributes, content] = match
+      const idMatch = fullMatch.match(/id=([^}]+)/)
+      const urlMatch = fullMatch.match(/url=([^}]+)/)
+
+      if (type === 'edit') {
+        const cleanLine = content.trim()
+        const words = cleanLine.split(/\s+/)
+
+        textContent.push(...words)
+        lines.push(cleanLine) // Add the full line to lines array
+        wordIndex += words.length
+      } else if (type === 'image') {
+        events.push({
+          type: 'image',
+          index: wordIndex,
+          id: idMatch?.[1],
+          url: urlMatch?.[1],
+        })
+      } else if (type === 'camera') {
+        events.push({
+          type: 'camera',
+          index: wordIndex,
+          id: idMatch?.[1],
+        })
+      }
+    }
+
+    return {
+      cleanText: textContent.join(' '),
+      lines,
+      words: textContent,
+      events,
+    }
+  })
+
   return {
     isPlaying,
     startPlaying,
@@ -56,6 +101,7 @@ export const useTeleprompterStore = defineStore('teleprompter', () => {
     resetTeleprompterSliders,
     estimatedReadingTime,
     updateScript,
+    parsedScript,
   }
 })
 
