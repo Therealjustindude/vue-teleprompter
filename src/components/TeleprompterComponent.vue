@@ -58,7 +58,7 @@ function handleTokenEvent(index: number) {
   if (event) {
     if (event.type === 'image') {
       videoStreamStore.toggleCamera()
-      videoStreamStore.showImageOnCanvas(event.url || 'icon-scissors.svg')
+      videoStreamStore.showImageOnCanvas(event.url || 'sample-img.jpg')
       emit('switch-to-image')
     } else if (event.type === 'camera') {
       videoStreamStore.toggleCamera()
