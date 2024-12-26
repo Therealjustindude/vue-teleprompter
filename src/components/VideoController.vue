@@ -6,31 +6,38 @@ import RecordButton from './RecordButton.vue'
 import { useVideoStreamStore } from '@/stores/video-stream'
 import { useTeleprompterStore } from '@/stores/teleprompter'
 
-const recordingStore = useVideoStreamStore()
+const emit = defineEmits(['start-recording', 'stop-recording'])
+const videoStreamStore = useVideoStreamStore()
 const teleprompterStore = useTeleprompterStore()
 const refWrapper = ref<HTMLElement | null>(null)
 
 const handleRecordingClick = () => {
-  if (recordingStore.isRecording) {
-    recordingStore.stopRecording()
+  if (videoStreamStore.isRecording) {
+    videoStreamStore.stopRecording()
     teleprompterStore.stopPlaying()
+    emit('stop-recording')
   } else {
-    recordingStore.startRecording()
+    videoStreamStore.startRecording()
     teleprompterStore.startPlaying()
+    emit('start-recording')
   }
 }
 
 const handleCameraToggle = () => {
-  recordingStore.toggleCamera()
+  videoStreamStore.toggleCamera()
 }
 </script>
 
 <template>
   <div id="control-wrapper" ref="refWrapper">
-    <RecordButton @click="handleRecordingClick" :isRecording="recordingStore.isRecording" />
-    <VideoCameraIcon v-if="!recordingStore.isCameraOff" class="icon" @click="handleCameraToggle" />
+    <RecordButton @click="handleRecordingClick" :isRecording="videoStreamStore.isRecording" />
+    <VideoCameraIcon
+      v-if="!videoStreamStore.isCameraOff"
+      class="icon"
+      @click="handleCameraToggle"
+    />
     <VideoCameraSlashIcon
-      v-if="recordingStore.isCameraOff"
+      v-if="videoStreamStore.isCameraOff"
       class="icon"
       @click="handleCameraToggle"
     />

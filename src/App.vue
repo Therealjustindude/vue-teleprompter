@@ -3,8 +3,33 @@ import VideoController from './components/VideoController.vue'
 import TeleprompterComponent from './components/TeleprompterComponent.vue'
 import VideoStream from './components/VideoStream.vue'
 import { useVideoStreamStore } from '@/stores/video-stream'
-import { script } from '@/utils/script'
+import { script } from '@/utils/script.ts'
 const videoStreamStore = useVideoStreamStore()
+
+const handleStartTeleprompterEmit = () => {
+  console.log('teleprompter started')
+}
+const handleStopTeleprompterEmit = () => {
+  console.log('teleprompter stopped')
+}
+const handleResetTeleprompterEmit = () => {
+  console.log('teleprompter restarted')
+}
+const handleSwitchToImageEmit = () => {
+  console.log('teleprompter switched to image')
+}
+const handleSwitchToCameraEmit = () => {
+  console.log('teleprompter switched to camera')
+}
+
+const handleStartRecordingEmit = () => {
+  console.log('recording started')
+  handleStartTeleprompterEmit()
+}
+const handleStopRecordingEmit = () => {
+  console.log('recording stopped')
+  handleStopTeleprompterEmit()
+}
 </script>
 
 <template>
@@ -14,12 +39,22 @@ const videoStreamStore = useVideoStreamStore()
   </header>
   <main>
     <div id="main-wrapper">
-      <TeleprompterComponent :script="script" />
+      <TeleprompterComponent
+        :script="script"
+        @start="handleStartTeleprompterEmit"
+        @stop="handleStopTeleprompterEmit"
+        @reset="handleResetTeleprompterEmit"
+        @switch-to-image="handleSwitchToImageEmit"
+        @switch-to-camera="handleSwitchToCameraEmit"
+      />
       <VideoStream />
     </div>
   </main>
   <footer>
-    <VideoController />
+    <VideoController
+      @start-recording="handleStartRecordingEmit"
+      @stop-recording="handleStopRecordingEmit"
+    />
   </footer>
 </template>
 

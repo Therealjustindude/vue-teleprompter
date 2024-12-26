@@ -2,17 +2,83 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import TeleprompterController from './TeleprompterController.vue'
 import { useTeleprompterStore } from '@/stores/teleprompter'
+import { useVideoStreamStore } from '@/stores/video-stream'
 
 const props = defineProps<{
   script: string
 }>()
+
+const emit = defineEmits(['start', 'stop', 'reset', 'switch-to-image', 'switch-to-camera'])
+
 const teleprompterStore = useTeleprompterStore()
+const videoStreamStore = useVideoStreamStore()
+
 let isDragging = false
 let startX: number, startY: number, startLeft: number, startTop: number
+
 const teleprompterContainerRef = ref<HTMLElement | null>(null)
 const textContainerRef = ref<HTMLElement | null>(null)
-let animationFrameId: number | null = null
-let position = 0
+const currentWordIndex = ref(0)
+
+const initialText = computed(() => teleprompterStore.parsedScript.lines.join('\n'))
+const words = computed(() => teleprompterStore.parsedScript.words)
+
+const scrollStep = computed(() => {
+  return Number(teleprompterStore.teleprompterSpeedSlider)
+})
+
+async function startTeleprompterScroll() {
+  if (!teleprompterStore.isPlaying || !textContainerRef.value) return
+
+  function scrollStepFrame() {
+    if (!teleprompterStore.isPlaying || !textContainerRef.value) return
+
+    textContainerRef.value.scrollTop += scrollStep.value
+
+    if (currentWordIndex.value < words.value.length) {
+      handleTokenEvent(currentWordIndex.value)
+      currentWordIndex.value++
+    }
+
+    if (
+      Math.ceil(textContainerRef.value.scrollTop + textContainerRef.value.clientHeight) >=
+      textContainerRef.value.scrollHeight
+    ) {
+      stopTeleprompterScroll()
+    } else {
+      requestAnimationFrame(scrollStepFrame)
+    }
+  }
+  emit('start')
+  requestAnimationFrame(scrollStepFrame)
+}
+
+function handleTokenEvent(index: number) {
+  const event = teleprompterStore.parsedScript.events.find((e) => e.index === index)
+  if (event) {
+    if (event.type === 'image') {
+      videoStreamStore.toggleCamera()
+      videoStreamStore.showImageOnCanvas(event.url || 'icon-scissors.svg')
+      emit('switch-to-image')
+    } else if (event.type === 'camera') {
+      videoStreamStore.toggleCamera()
+      emit('switch-to-camera')
+    }
+  }
+}
+
+function stopTeleprompterScroll() {
+  teleprompterStore.isPlaying = false
+  emit('stop')
+}
+
+function resetScroll() {
+  currentWordIndex.value = 0
+  if (textContainerRef.value) {
+    textContainerRef.value.scrollTop = 0
+  }
+  emit('reset')
+}
 
 const textStyle = computed(() => ({
   fontSize: `${teleprompterStore.fontSizeSlider}px`,
@@ -151,28 +217,6 @@ watch(
   },
 )
 
-const startTeleprompterScroll = () => {
-  if (teleprompterStore.isPlaying && textContainerRef.value) {
-    position += Number(teleprompterStore.teleprompterSpeedSlider)
-    textContainerRef.value.style.transform = `translateY(-${position}px)`
-    animationFrameId = requestAnimationFrame(startTeleprompterScroll)
-  }
-}
-
-const stopTeleprompterScroll = () => {
-  if (animationFrameId !== null) {
-    cancelAnimationFrame(animationFrameId)
-    animationFrameId = null
-  }
-}
-
-const resetScroll = () => {
-  position = 0
-  if (textContainerRef.value) {
-    textContainerRef.value.style.transform = 'translateY(0px)'
-  }
-}
-
 onMounted(() => {
   teleprompterStore.updateScript(props.script)
 })
@@ -186,7 +230,9 @@ onMounted(() => {
     @touchstart="onTouchDown"
   >
     <div id="script-container" ref="textContainerRef">
-      <p id="script" :style="textStyle">{{ script }}</p>
+      <p id="script" :style="textStyle">
+        {{ initialText }}
+      </p>
     </div>
     <TeleprompterController @reset="resetScroll" />
   </div>
@@ -221,14 +267,21 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   pointer-events: none;
-  padding: 24px 32px;
+  padding: 104px 32px 0px 32px;
+  scroll-behavior: auto;
+  overflow-y: scroll;
 }
+
 #teleprompter p {
   color: white;
   font-size: 24px;
-  line-height: 4rem;
+  line-height: 8rem;
   white-space: pre-wrap;
   pointer-events: none;
   transition: font-size 0.2s ease-in-out;
+}
+
+#teleprompter p::first-line {
+  line-height: 2rem;
 }
 </style>
