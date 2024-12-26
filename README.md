@@ -2,6 +2,8 @@
 
 A feature-rich teleprompter application built with Vue 3, Pinia, and Vite. This project includes customizable text scrolling, dynamic speed control, text resizing, drag-and-drop functionality, and an estimated reading time display.
 
+[Vue-Telepromter site](vue-teleprompter.vercel.app)
+
 ---
 
 ## Features
