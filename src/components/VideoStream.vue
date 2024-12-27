@@ -12,7 +12,10 @@ const initializeVideoStream = async () => {
     if (canvasRef.value) videoStreamStore.setCanvasElementRefContext(canvasRef.value)
 
     // Start video stream
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    })
     videoStreamStore.setVideoStream(stream)
     videoRef.value!.srcObject = videoStreamStore.videoStream
 
@@ -28,9 +31,14 @@ const initializeVideoStream = async () => {
     }
 
     // Initialize MediaRecorder
-    if (canvasRef.value) {
-      const canvasStream = canvasRef.value.captureStream()
-      videoStreamStore.setMediaRecorder(new MediaRecorder(canvasStream))
+    if (canvasRef.value && videoStreamStore.videoStream) {
+      const canvasStream = canvasRef.value!.captureStream()
+
+      const combinedStream = new MediaStream([
+        ...canvasStream.getVideoTracks(),
+        ...videoStreamStore.videoStream.getAudioTracks(),
+      ])
+      videoStreamStore.setMediaRecorder(new MediaRecorder(combinedStream))
     }
   } catch (error) {
     console.error('Error initializing video stream:', error)
@@ -48,7 +56,7 @@ onUnmounted(() => {
 
 <template>
   <div id="video-wrapper">
-    <video id="video-stream" ref="videoRef" autoplay loop muted />
+    <video id="video-stream" ref="videoRef" autoplay loop />
     <canvas id="canvas-element" ref="canvasRef"></canvas>
   </div>
 </template>
