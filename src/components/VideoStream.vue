@@ -56,7 +56,7 @@ onUnmounted(() => {
 
 <template>
   <div id="video-wrapper">
-    <video id="video-stream" ref="videoRef" autoplay loop />
+    <video id="video-stream" ref="videoRef" autoplay loop muted />
     <canvas id="canvas-element" ref="canvasRef"></canvas>
   </div>
 </template>
